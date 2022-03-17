@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <button onclick="change()">change</button>
+  <script src="./renderer.js"></script>
+  <script src="./flushJob.js"></script>
+  <script src="./effect.js"></script>
+  <script src="./reactive.js"></script>
+  <script src="./computed.js"></script>
+  <script src="./watch.js"></script>
+  <script>
+    renderer(vnode, document.querySelector('#app'));
+    var obj = {
+      a: 1,
+      b: 2,
+      ok: true,
+      name: 'hello',
+      num: 1
+    };
+
+    const data = reactive(obj);
+    effect(() => {
+      document.querySelector('#app').innerText = data.ok ? data.name : 'not';
+    }, {
+      scheduler(fn) {
+        jobQueue.add(fn);
+        flushJob();
+      }
+    });
+
+    const result = computed(() => data.a + data.b)
+
+    effect(() => {
+      console.log(result.value);
+    })
+
+    function change() {
+      data.ok = false;
+      data.a++;
+      // data.name = 'hello miniVue'
+    }
+  </script>
+</body>
+
+</html>
